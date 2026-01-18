@@ -1,0 +1,8 @@
+# Requirements for Compliance Exporter
+# No external dependencies needed - uses stdlib only
+# This file is here for future extensibility
+
+# Uncomment if you want to add features:
+# requests>=2.28.0      # For webhook integration
+# prometheus_client>=0.15.0  # Alternative Prometheus library
+# pyyaml>=6.0           # For YAML parsing

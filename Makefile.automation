@@ -1,0 +1,35 @@
+# ============================================
+# ENTERPRISE AUTOMATION COMMANDS
+# ============================================
+
+.PHONY: setup start stop status logs clean
+
+# 1. Khởi tạo toàn bộ hệ thống (lần đầu)
+setup:
+	@echo "🔧 Đang cài đặt hệ thống Enterprise..."
+	docker-compose -f docker-compose.enterprise.yml up -d postgres redis
+	@sleep 5
+	PYTHONPATH=$(pwd) python3 backend/database/init_db.py
+	@echo "✅ Setup hoàn tất!"
+
+# 2. Chạy toàn bộ Platform (API + Worker + Scheduler)
+start:
+	@echo "🚀 Đang khởi chạy Enterprise Platform..."
+	docker-compose -f docker-compose.enterprise.yml up -d
+	@echo "🌍 API: http://localhost:8000/docs"
+	@echo "📊 Monitoring: http://localhost:3000"
+
+# 3. Chạy thủ công 1 lần quét Compliance (Tự động chạy ngầm)
+scan:
+	@echo "🔍 Đang gửi yêu cầu quét Compliance..."
+	curl -X POST http://localhost:8000/api/v1/scans/ \
+		-H "Content-Type: application/json" \
+		-d '{"environment_id": 1, "scan_type": "openstack"}'
+
+# 4. Kiểm tra trạng thái các service
+status:
+	docker-compose -f docker-compose.enterprise.yml ps
+
+# 5. Xem log của hệ thống tự động
+logs:
+	docker-compose -f docker-compose.enterprise.yml logs -f celery_worker

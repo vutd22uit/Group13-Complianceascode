@@ -1,0 +1,222 @@
+# ============================================
+# Prometheus Alerting Rules
+# OpenStack CIS Compliance Monitoring
+# ============================================
+
+groups:
+  # ============================================
+  # Critical Compliance Alerts
+  # ============================================
+  - name: compliance_critical
+    interval: 1m
+    rules:
+      - alert: ComplianceScoreDropped
+        expr: openstack_compliance_score_percent < 70
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "OpenStack Compliance Score Below 70%"
+          description: |
+            The overall compliance score has dropped to {{ $value }}%.
+            This indicates multiple critical security controls are failing.
+            Immediate investigation required.
+
+      - alert: CriticalControlFailed
+        expr: openstack_critical_compliance_percent < 100
+        for: 1m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "CRITICAL Security Controls Failing"
+          description: |
+            {{ $value }}% of CRITICAL controls are passing.
+            Critical controls include: TLS enforcement, authentication settings, logging.
+            Immediate remediation required.
+
+      - alert: KeystoneComplianceFailed
+        expr: openstack_service_compliance{service="keystone"} < 80
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+          service: keystone
+        annotations:
+          summary: "Keystone (Identity) Compliance Below 80%"
+          description: |
+            Keystone compliance is at {{ $value }}%.
+            Identity service controls are critical for authentication security.
+
+  # ============================================
+  # High Severity Alerts
+  # ============================================
+  - name: compliance_high
+    interval: 2m
+    rules:
+      - alert: HighSeverityControlsFailing
+        expr: openstack_high_compliance_percent < 90
+        for: 10m
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "HIGH Severity Controls Below 90%"
+          description: |
+            {{ $value }}% of HIGH severity controls are passing.
+            Review failed controls and plan remediation.
+
+      - alert: NovaComplianceDegraded
+        expr: openstack_service_compliance{service="nova"} < 85
+        for: 10m
+        labels:
+          severity: high
+          team: compute
+          service: nova
+        annotations:
+          summary: "Nova (Compute) Compliance Degraded"
+          description: |
+            Nova compliance dropped to {{ $value }}%.
+            Check compute service hardening controls.
+
+      - alert: NeutronComplianceDegraded
+        expr: openstack_service_compliance{service="neutron"} < 85
+        for: 10m
+        labels:
+          severity: high
+          team: network
+          service: neutron
+        annotations:
+          summary: "Neutron (Network) Compliance Degraded"
+          description: |
+            Neutron compliance dropped to {{ $value }}%.
+            Check network security group and TLS settings.
+
+      - alert: MultipleControlsFailed
+        expr: openstack_controls_failed > 10
+        for: 5m
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "Multiple Controls Failing (>10)"
+          description: |
+            {{ $value }} controls are currently failing.
+            Review the compliance dashboard for details.
+
+  # ============================================
+  # Medium Severity Alerts
+  # ============================================
+  - name: compliance_medium
+    interval: 5m
+    rules:
+      - alert: LinuxCISComplianceLow
+        expr: openstack_service_compliance{service="linux"} < 80
+        for: 30m
+        labels:
+          severity: medium
+          team: infrastructure
+          service: linux
+        annotations:
+          summary: "Linux CIS Compliance Below 80%"
+          description: |
+            Linux host compliance is at {{ $value }}%.
+            OS-level hardening needs attention.
+
+      - alert: StorageComplianceWarning
+        expr: openstack_service_compliance{service="cinder"} < 85
+        for: 30m
+        labels:
+          severity: medium
+          team: storage
+          service: cinder
+        annotations:
+          summary: "Cinder (Storage) Compliance Warning"
+          description: |
+            Storage service compliance at {{ $value }}%.
+            Check encryption and access control settings.
+
+      - alert: ComplianceScoreTrending
+        expr: delta(openstack_compliance_score_percent[1h]) < -5
+        for: 15m
+        labels:
+          severity: medium
+          team: security
+        annotations:
+          summary: "Compliance Score Declining"
+          description: |
+            Compliance score dropped by {{ $value }}% in the last hour.
+            Investigate recent changes.
+
+  # ============================================
+  # Operational Alerts
+  # ============================================
+  - name: compliance_operational
+    interval: 5m
+    rules:
+      - alert: ScanStale
+        expr: (time() - openstack_last_scan_timestamp) / 3600 > 24
+        for: 1h
+        labels:
+          severity: warning
+          team: operations
+        annotations:
+          summary: "Compliance Scan Stale (>24h)"
+          description: |
+            Last compliance scan was {{ $value | humanizeDuration }} ago.
+            Ensure scheduled scans are running.
+
+      - alert: ExporterDown
+        expr: up{job="compliance_exporter"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          team: operations
+        annotations:
+          summary: "Compliance Exporter Down"
+          description: |
+            The compliance metrics exporter is not responding.
+            Check the exporter container.
+
+      - alert: NoEvidenceCollected
+        expr: openstack_evidence_collected_total == 0
+        for: 1h
+        labels:
+          severity: warning
+          team: operations
+        annotations:
+          summary: "No Evidence Being Collected"
+          description: |
+            No evidence files detected.
+            Check evidence collector configuration.
+
+  # ============================================
+  # SLA / Compliance Window Alerts
+  # ============================================
+  - name: compliance_sla
+    interval: 10m
+    rules:
+      - alert: MTTRExceeding
+        expr: openstack_mttr_hours > 72
+        for: 1h
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "Mean Time To Remediate Exceeding SLA"
+          description: |
+            MTTR is {{ $value }} hours, exceeding 72-hour SLA.
+            Review remediation backlog.
+
+      - alert: RemediationBacklog
+        expr: openstack_controls_failed - openstack_remediations_total > 5
+        for: 24h
+        labels:
+          severity: medium
+          team: security
+        annotations:
+          summary: "Remediation Backlog Growing"
+          description: |
+            {{ $value }} failed controls pending remediation.
+            Prioritize and assign remediation tasks.

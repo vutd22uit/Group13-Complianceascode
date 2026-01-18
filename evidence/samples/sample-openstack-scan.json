@@ -1,0 +1,363 @@
+{
+    "version": "5.22.0",
+    "platform": {
+        "name": "openstack-controller",
+        "release": "Ubuntu 22.04",
+        "target_id": "controller-01"
+    },
+    "profiles": [
+        {
+            "name": "openstack-cis-benchmark",
+            "version": "1.0.0",
+            "title": "CIS OpenStack Foundations Benchmark",
+            "controls": [
+                {
+                    "id": "os-identity-1.1",
+                    "title": "Ensure keystone.conf ownership is set to root:keystone",
+                    "desc": "The keystone.conf file should be owned by root and the keystone group.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-1.1",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "1. Identity (Keystone)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "File /etc/keystone/keystone.conf owner should eq 'root'",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-identity-1.2",
+                    "title": "Ensure keystone.conf permissions are set to 640",
+                    "desc": "The keystone.conf file should have restrictive permissions.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-1.2",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "1. Identity (Keystone)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "File /etc/keystone/keystone.conf mode should cmp <= 0640",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-identity-1.3",
+                    "title": "Ensure insecure TLS protocols are disabled",
+                    "desc": "Keystone should not support old SSL/TLS versions.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-1.3",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "1. Identity (Keystone)"
+                    },
+                    "results": [
+                        {
+                            "status": "failed",
+                            "code_desc": "TLS version min should be 1.2",
+                            "message": "Expected 1.2, got 1.0"
+                        }
+                    ]
+                },
+                {
+                    "id": "os-compute-2.1",
+                    "title": "Ensure nova.conf ownership is set to root:nova",
+                    "desc": "The nova.conf file should be owned by root and the nova group.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-2.1",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "2. Compute (Nova)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "File /etc/nova/nova.conf owner should eq 'root'",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-compute-2.2",
+                    "title": "Ensure nova.conf permissions are set to 640",
+                    "desc": "The nova.conf file should have restrictive permissions.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-2.2",
+                        "severity": "high",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "2. Compute (Nova)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "File /etc/nova/nova.conf mode should cmp <= 0640",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-compute-2.3",
+                    "title": "Ensure VNC is using SSL",
+                    "desc": "VNC should use SSL/TLS encryption.",
+                    "impact": 0.8,
+                    "tags": {
+                        "cis": "CIS-OS-2.3",
+                        "severity": "high",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "2. Compute (Nova)"
+                    },
+                    "results": [
+                        {
+                            "status": "failed",
+                            "code_desc": "VNC should use HTTPS",
+                            "message": "VNC is using HTTP instead of HTTPS"
+                        }
+                    ]
+                },
+                {
+                    "id": "os-compute-2.4",
+                    "title": "Ensure internal API communication is secure",
+                    "desc": "Nova should communicate with other services over HTTPS.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-2.4",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "2. Compute (Nova)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "Glance API should use HTTPS",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-networking-3.1",
+                    "title": "Ensure neutron.conf ownership is set to root:neutron",
+                    "desc": "The neutron.conf file should be owned by root and the neutron group.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-3.1",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "3. Networking (Neutron)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "File /etc/neutron/neutron.conf owner should eq 'root'",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-networking-3.2",
+                    "title": "Ensure neutron.conf permissions are set to 640",
+                    "desc": "The neutron.conf file should have restrictive permissions.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-3.2",
+                        "severity": "high",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "3. Networking (Neutron)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "File /etc/neutron/neutron.conf mode should cmp <= 0640",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-networking-3.3",
+                    "title": "Ensure Neutron API uses SSL",
+                    "desc": "Neutron API should be configured to use SSL.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-3.3",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "3. Networking (Neutron)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "Neutron should use SSL",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-networking-3.4",
+                    "title": "Ensure auth_strategy is set to keystone",
+                    "desc": "Neutron should delegate authentication to Keystone.",
+                    "impact": 0.7,
+                    "tags": {
+                        "cis": "CIS-OS-3.4",
+                        "severity": "medium",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "3. Networking (Neutron)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "auth_strategy should eq 'keystone'",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-storage-4.1",
+                    "title": "Ensure cinder.conf ownership is set to root:cinder",
+                    "desc": "The cinder.conf file should be owned by root and the cinder group.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-4.1",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "4. Storage (Cinder)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "File /etc/cinder/cinder.conf owner should eq 'root'",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-storage-4.2",
+                    "title": "Ensure cinder.conf permissions are set to 640",
+                    "desc": "The cinder.conf file should have restrictive permissions.",
+                    "impact": 0.8,
+                    "tags": {
+                        "cis": "CIS-OS-4.2",
+                        "severity": "high",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "4. Storage (Cinder)"
+                    },
+                    "results": [
+                        {
+                            "status": "failed",
+                            "code_desc": "File mode should be 640",
+                            "message": "Current mode is 644, expected 640"
+                        }
+                    ]
+                },
+                {
+                    "id": "os-storage-4.3",
+                    "title": "Ensure NAS secure file permissions",
+                    "desc": "NAS backend should use secure file permissions.",
+                    "impact": 0.7,
+                    "tags": {
+                        "cis": "CIS-OS-4.3",
+                        "severity": "medium",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "4. Storage (Cinder)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "nas_secure_file_permissions should be auto",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "os-storage-4.4",
+                    "title": "Ensure Swift hash path is configured",
+                    "desc": "Swift hash path prefix and suffix must be unique.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-OS-4.4",
+                        "severity": "critical",
+                        "standard": "CIS OpenStack Foundations Benchmark",
+                        "section": "4. Storage (Swift)"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "swift_hash_path_prefix should not be 'changeme'",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "cis-linux-1.1.1",
+                    "title": "Ensure cramfs filesystem is disabled",
+                    "desc": "Disable mounting of cramfs filesystems.",
+                    "impact": 0.5,
+                    "tags": {
+                        "cis": "CIS-LINUX-1.1.1",
+                        "severity": "low",
+                        "standard": "CIS Linux Benchmark",
+                        "section": "1. Initial Setup"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "cramfs should be disabled",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "cis-linux-5.2.1",
+                    "title": "Ensure SSH root login is disabled",
+                    "desc": "Root login via SSH should be disabled.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis": "CIS-LINUX-5.2.1",
+                        "severity": "critical",
+                        "standard": "CIS Linux Benchmark",
+                        "section": "5. Access & Auth"
+                    },
+                    "results": [
+                        {
+                            "status": "failed",
+                            "code_desc": "PermitRootLogin should eq 'no'",
+                            "message": "PermitRootLogin is 'yes'"
+                        }
+                    ]
+                },
+                {
+                    "id": "cis-linux-5.2.2",
+                    "title": "Ensure SSH MaxAuthTries is set to 4 or less",
+                    "desc": "Limit authentication attempts.",
+                    "impact": 0.7,
+                    "tags": {
+                        "cis": "CIS-LINUX-5.2.2",
+                        "severity": "medium",
+                        "standard": "CIS Linux Benchmark",
+                        "section": "5. Access & Auth"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "MaxAuthTries should be <= 4",
+                            "message": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "statistics": {
+        "duration": 45.2,
+        "start_time": "2025-12-29T03:55:00Z"
+    }
+}

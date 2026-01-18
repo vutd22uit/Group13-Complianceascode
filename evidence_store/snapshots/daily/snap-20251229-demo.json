@@ -1,0 +1,82 @@
+{
+  "snapshot_id": "snap-20251229-demo",
+  "timestamp": "2025-12-29T09:54:25.905179+00:00",
+  "overall": {
+    "compliance_score": 76.0,
+    "total_controls": 50,
+    "controls_passed": 38,
+    "controls_failed": 12
+  },
+  "by_severity": {
+    "CRITICAL": {
+      "compliance_percentage": 100,
+      "total": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "HIGH": {
+      "compliance_percentage": 60,
+      "total": 15,
+      "passed": 9,
+      "failed": 6
+    },
+    "MEDIUM": {
+      "compliance_percentage": 80,
+      "total": 20,
+      "passed": 16,
+      "failed": 4
+    },
+    "LOW": {
+      "compliance_percentage": 80,
+      "total": 10,
+      "passed": 8,
+      "failed": 2
+    }
+  },
+  "by_section": {
+    "Identity (Keystone)": {
+      "compliance_percentage": 85
+    },
+    "Compute (Nova)": {
+      "compliance_percentage": 90
+    },
+    "Networking (Neutron)": {
+      "compliance_percentage": 65
+    },
+    "Storage (Cinder)": {
+      "compliance_percentage": 50
+    }
+  },
+  "top_violations": [
+    {
+      "control_id": "os-networking-3.1",
+      "title": "Neutron TLS enabled",
+      "severity": "CRITICAL",
+      "affected_resources": 12
+    },
+    {
+      "control_id": "os-storage-4.1",
+      "title": "Cinder Encryption",
+      "severity": "HIGH",
+      "affected_resources": 5
+    },
+    {
+      "control_id": "os-networking-3.1",
+      "title": "Neutron TLS enabled",
+      "severity": "CRITICAL",
+      "affected_resources": 13
+    },
+    {
+      "control_id": "os-compute-2.1",
+      "title": "Nova config permissions",
+      "severity": "MEDIUM",
+      "affected_resources": 8
+    },
+    {
+      "control_id": "os-identity-1.2",
+      "title": "Keystone Identity Provider",
+      "severity": "HIGH",
+      "affected_resources": 15
+    }
+  ]
+}

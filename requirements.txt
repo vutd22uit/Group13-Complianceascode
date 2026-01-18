@@ -1,0 +1,59 @@
+# ============================================
+# Core Framework Dependencies
+# ============================================
+# Existing requirements
+ansible>=8.0.0
+jinja2>=3.1.2
+pyyaml>=6.0
+python-dateutil>=2.8.2
+requests>=2.31.0
+
+# ============================================
+# NEW: Backend API Dependencies
+# ============================================
+
+# FastAPI Web Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Database
+sqlalchemy>=2.0.23
+psycopg2-binary>=2.9.9  # PostgreSQL driver
+alembic>=1.12.1  # Database migrations
+
+# Authentication & Security
+python-jose[cryptography]>=3.3.0  # JWT tokens
+passlib[bcrypt]>=1.7.4  # Password hashing
+python-dotenv>=1.0.0  # Environment variables
+
+# Task Queue (Celery)
+celery>=5.3.4
+redis>=5.0.1
+
+# Reporting
+weasyprint>=60.1  # PDF generation
+openpyxl>=3.1.2  # Excel generation
+pandas>=2.1.3  # Data processing
+
+# Integrations
+slack-sdk>=3.26.1  # Slack integration
+jira>=3.5.2  # Jira integration
+
+# Monitoring & Logging
+prometheus-client>=0.19.0
+structlog>=23.2.0
+
+# Validation & Serialization
+pydantic>=2.5.0
+email-validator>=2.1.0
+
+# Testing
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+httpx>=0.25.2  # For testing FastAPI
+
+# Development Tools
+black>=23.12.0  # Code formatter
+flake8>=6.1.0  # Linter
+mypy>=1.7.1  # Type checker

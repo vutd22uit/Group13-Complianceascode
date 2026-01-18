@@ -1,0 +1,129 @@
+# ============================================
+# Compliance Monitoring Stack - Docker Compose
+# ============================================
+# Full-featured monitoring with:
+# - Prometheus: Metrics collection
+# - Grafana: Visualization & Dashboards
+# - Alertmanager: Alert routing & notifications
+# - Compliance Exporter: InSpec results to metrics
+# ============================================
+# FIXED: Using bridge networking with port mappings for Podman/Mac compatibility
+
+services:
+  # ============================================
+  # Prometheus - Metrics Collection
+  # ============================================
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: compliance_prometheus
+    restart: unless-stopped
+    user: root
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=90d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ============================================
+  # Grafana - Visualization
+  # ============================================
+  grafana:
+    image: grafana/grafana:10.2.3
+    container_name: compliance_grafana
+    restart: unless-stopped
+    user: root
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=openstack-cis-2024
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/compliance-dashboard.json
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/compliance-dashboard.json:/etc/grafana/provisioning/dashboards/compliance-dashboard.json:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ============================================
+  # Alertmanager - Alert Routing
+  # ============================================
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: compliance_alertmanager
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "9093:9093"
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:9093/-/healthy" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # Compliance Exporter - InSpec to Prometheus
+  # ============================================
+  exporter:
+    build:
+      context: ./exporters
+      dockerfile: Dockerfile
+    command: [ "--port", "9100", "--results-dir", "/app/scan-results", "--evidence-dir", "/app/evidence" ]
+    restart: unless-stopped
+    environment:
+      - RESULTS_DIR=/app/scan-results
+      - EXPORTER_PORT=9100
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../scan-results:/app/scan-results:ro
+      - ../evidence_store:/app/evidence:ro
+    ports:
+      - "9100:9100"
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:9100/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# ============================================
+# Volumes - Persistent Storage
+# ============================================
+volumes:
+  prometheus_data:
+    name: compliance_prometheus_data
+  grafana_data:
+    name: compliance_grafana_data
+  alertmanager_data:
+    name: compliance_alertmanager_data

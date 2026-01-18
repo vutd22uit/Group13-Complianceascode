@@ -1,0 +1,217 @@
+{
+  "platform": {
+    "name": "aws",
+    "release": "aws-sdk-2.0"
+  },
+  "profiles": [
+    {
+      "name": "aws-cis-benchmark",
+      "version": "1.5.0",
+      "title": "CIS AWS Foundations Benchmark",
+      "summary": "This profile implements the CIS AWS Foundations Benchmark v1.5.0",
+      "supports": [],
+      "attributes": [],
+      "groups": [],
+      "controls": [
+        {
+          "id": "cis-aws-1-4",
+          "title": "Ensure no 'root' user account access key exists",
+          "desc": "The root user is the most privileged user in an AWS account. AWS Access Keys provide programmatic access to AWS.",
+          "impact": 1.0,
+          "tags": {
+            "cis": "CIS-AWS-1.4",
+            "severity": "critical",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "1. Identity and Access Management"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "AWS IAM Root User should not have access key",
+              "run_time": 0.523,
+              "start_time": "2025-12-07T10:30:00+00:00",
+              "resource": "arn:aws:iam::123456789012:root",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "id": "cis-aws-1-5",
+          "title": "Ensure MFA is enabled for the 'root' user account",
+          "desc": "The root user is the most privileged user in an AWS account. MFA adds an extra layer of protection.",
+          "impact": 1.0,
+          "tags": {
+            "cis": "CIS-AWS-1.5",
+            "severity": "critical",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "1. Identity and Access Management"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "AWS IAM Root User should have MFA enabled",
+              "run_time": 0.412,
+              "start_time": "2025-12-07T10:30:01+00:00",
+              "resource": "arn:aws:iam::123456789012:root",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "id": "cis-aws-2-1-4",
+          "title": "Ensure S3 buckets are configured with 'Block public access'",
+          "desc": "Amazon S3 'Block Public Access' provides settings to help manage public access to S3 resources.",
+          "impact": 1.0,
+          "tags": {
+            "cis": "CIS-AWS-2.1.4",
+            "severity": "critical",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "2.1 Storage - S3"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "S3 Bucket production-app-data should have block public access enabled",
+              "run_time": 0.625,
+              "start_time": "2025-12-07T10:30:02+00:00",
+              "resource": "arn:aws:s3:::production-app-data",
+              "message": "expected block_public_acls to be true, got false\nexpected block_public_policy to be true, got false"
+            }
+          ]
+        },
+        {
+          "id": "cis-aws-2-1-4",
+          "title": "Ensure S3 buckets are configured with 'Block public access'",
+          "desc": "Amazon S3 'Block Public Access' provides settings to help manage public access to S3 resources.",
+          "impact": 1.0,
+          "tags": {
+            "cis": "CIS-AWS-2.1.4",
+            "severity": "critical",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "2.1 Storage - S3"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "S3 Bucket compliant-logs-bucket should have block public access enabled",
+              "run_time": 0.389,
+              "start_time": "2025-12-07T10:30:03+00:00",
+              "resource": "arn:aws:s3:::compliant-logs-bucket",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "id": "cis-aws-2-1-2",
+          "title": "Ensure S3 buckets have server-side encryption enabled",
+          "desc": "Amazon S3 default encryption provides a way to set the default encryption behavior for an S3 bucket.",
+          "impact": 1.0,
+          "tags": {
+            "cis": "CIS-AWS-2.1.2",
+            "severity": "critical",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "2.1 Storage - S3"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "S3 Bucket legacy-uploads should have encryption enabled",
+              "run_time": 0.298,
+              "start_time": "2025-12-07T10:30:04+00:00",
+              "resource": "arn:aws:s3:::legacy-uploads",
+              "message": "expected encryption to be configured, got nil"
+            }
+          ]
+        },
+        {
+          "id": "cis-aws-3-1",
+          "title": "Ensure CloudTrail is enabled in all regions",
+          "desc": "AWS CloudTrail is a web service that records AWS API calls for your account.",
+          "impact": 0.7,
+          "tags": {
+            "cis": "CIS-AWS-3.1",
+            "severity": "high",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "3. Logging"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "CloudTrail should be enabled in all regions",
+              "run_time": 0.845,
+              "start_time": "2025-12-07T10:30:05+00:00",
+              "resource": "arn:aws:cloudtrail:us-east-1:123456789012:trail/organization-trail",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "id": "cis-aws-5-2",
+          "title": "Ensure no security groups allow ingress from 0.0.0.0/0 to port 22",
+          "desc": "Security groups provide stateful filtering of ingress/egress network traffic.",
+          "impact": 1.0,
+          "tags": {
+            "cis": "CIS-AWS-5.2",
+            "severity": "critical",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "5. Networking"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "Security group sg-0abc123def456 should not allow SSH from 0.0.0.0/0",
+              "run_time": 0.712,
+              "start_time": "2025-12-07T10:30:06+00:00",
+              "resource": "arn:aws:ec2:us-east-1:123456789012:security-group/sg-0abc123def456",
+              "message": "found ingress rule allowing SSH (port 22) from 0.0.0.0/0"
+            }
+          ]
+        },
+        {
+          "id": "cis-aws-1-10",
+          "title": "Ensure MFA is enabled for all IAM users with console password",
+          "desc": "Multi-factor authentication (MFA) adds an extra layer of protection.",
+          "impact": 0.7,
+          "tags": {
+            "cis": "CIS-AWS-1.10",
+            "severity": "high",
+            "standard": "CIS AWS Foundations Benchmark v1.5.0",
+            "section": "1. Identity and Access Management"
+          },
+          "refs": [],
+          "code": "",
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "IAM user john.doe should have MFA enabled",
+              "run_time": 0.234,
+              "start_time": "2025-12-07T10:30:07+00:00",
+              "resource": "arn:aws:iam::123456789012:user/john.doe",
+              "message": "User has console access but MFA is not enabled"
+            }
+          ]
+        }
+      ],
+      "sha256": "abc123def456..."
+    }
+  ],
+  "statistics": {
+    "start_time": "2025-12-07T10:30:00+00:00",
+    "duration": 8.234
+  },
+  "version": "5.22.3"
+}

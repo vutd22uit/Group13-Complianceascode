@@ -1,0 +1,141 @@
+# Prometheus Alert Rules for OpenStack CIS Compliance
+
+groups:
+  - name: openstack_compliance_alerts
+    interval: 1m
+    rules:
+      # CRITICAL: Overall compliance below 80%
+      - alert: ComplianceScoreLow
+        expr: openstack_compliance_score_percent < 80
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "OpenStack compliance score is below 80%"
+          description: "Current compliance score is {{ $value }}%. Immediate action required."
+
+      # CRITICAL: Any CRITICAL control failing
+      - alert: CriticalControlFailing
+        expr: openstack_critical_compliance_percent < 100
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL controls are not 100% compliant"
+          description: "CRITICAL control compliance is {{ $value }}%. All CRITICAL controls must pass."
+
+      # HIGH: Compliance score dropping
+      - alert: ComplianceScoreDropping
+        expr: delta(openstack_compliance_score_percent[1h]) < -5
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "Compliance score dropped more than 5% in the last hour"
+          description: "Compliance score changed by {{ $value }}% in the last hour. Investigate configuration drift."
+
+      # HIGH: Failed controls increasing
+      - alert: FailedControlsIncreasing
+        expr: increase(openstack_controls_failed[1h]) > 5
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "Number of failed controls increased significantly"
+          description: "{{ $value }} new failed controls in the last hour."
+
+      # MEDIUM: Service compliance below threshold
+      - alert: ServiceComplianceLow
+        expr: openstack_service_compliance < 70
+        for: 10m
+        labels:
+          severity: medium
+        annotations:
+          summary: "Service {{ $labels.service }} compliance is below 70%"
+          description: "{{ $labels.service }} compliance is {{ $value }}%. Review service configuration."
+
+      # Keystone specific
+      - alert: KeystoneComplianceLow
+        expr: openstack_service_compliance{service="keystone"} < 80
+        for: 5m
+        labels:
+          severity: high
+          service: keystone
+        annotations:
+          summary: "Keystone (Identity) compliance below 80%"
+          description: "Keystone compliance is {{ $value }}%. Identity security is critical."
+
+      # Nova specific
+      - alert: NovaComplianceLow
+        expr: openstack_service_compliance{service="nova"} < 80
+        for: 5m
+        labels:
+          severity: high
+          service: nova
+        annotations:
+          summary: "Nova (Compute) compliance below 80%"
+          description: "Nova compliance is {{ $value }}%. Compute security needs attention."
+
+      # No scan in 24 hours
+      - alert: NoRecentComplianceScan
+        expr: time() - openstack_last_scan_timestamp > 86400
+        for: 1h
+        labels:
+          severity: high
+        annotations:
+          summary: "No compliance scan in the last 24 hours"
+          description: "Last scan was {{ $value | humanizeDuration }} ago. Ensure scanning is operational."
+
+      # Evidence collection stopped
+      - alert: EvidenceCollectionStopped
+        expr: increase(openstack_evidence_collected_total[24h]) == 0
+        for: 1h
+        labels:
+          severity: medium
+        annotations:
+          summary: "No new evidence collected in the last 24 hours"
+          description: "Evidence collection may have stopped. Check the collection pipeline."
+
+      # MTTR too high
+      - alert: MTTRTooHigh
+        expr: openstack_mttr_hours > 4
+        for: 30m
+        labels:
+          severity: high
+        annotations:
+          summary: "Mean Time To Remediate exceeds 4 hours"
+          description: "MTTR is {{ $value }} hours. SLA for CRITICAL issues is 4 hours."
+
+      # HIGH severity findings
+      - alert: HighSeverityFindingsDetected
+        expr: openstack_findings_by_severity{severity="high"} > 10
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "More than 10 HIGH severity findings detected"
+          description: "There are {{ $value }} HIGH severity findings. Review and remediate."
+
+      # CRITICAL severity findings
+      - alert: CriticalSeverityFindingsDetected
+        expr: openstack_findings_by_severity{severity="critical"} > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL severity findings detected"
+          description: "There are {{ $value }} CRITICAL findings. Immediate remediation required!"
+
+  - name: linux_compliance_alerts
+    interval: 1m
+    rules:
+      # Linux CIS compliance
+      - alert: LinuxComplianceLow
+        expr: openstack_service_compliance{service="linux"} < 60
+        for: 10m
+        labels:
+          severity: high
+          service: linux
+        annotations:
+          summary: "Linux CIS compliance below 60%"
+          description: "Linux host compliance is {{ $value }}%. Run remediation playbook."

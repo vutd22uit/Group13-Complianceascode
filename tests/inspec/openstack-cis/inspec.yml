@@ -1,0 +1,14 @@
+name: openstack-cis
+title: CIS OpenStack Benchmark v1.0.0
+maintainer: Compliance-as-Code Team
+copyright: Compliance-as-Code Team
+copyright_email: support@example.com
+license: MIT
+summary: InSpec profile to audit OpenStack security configuration based on CIS OpenStack Foundation Benchmark
+version: 0.1.0
+supports:
+  - platform: os
+  - platform: linux
+depends:
+  - name: linux-baseline
+    url: https://github.com/dev-sec/linux-baseline/archive/master.tar.gz

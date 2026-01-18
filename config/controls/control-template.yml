@@ -1,0 +1,276 @@
+# Compliance Control Definition Template
+# Use this template to define new compliance controls
+
+control:
+  # Unique identifier for this control
+  id: "CIS-AWS-X.X"
+
+  # Compliance standard this control belongs to
+  standard: "CIS AWS Foundations Benchmark v1.5.0"
+
+  # Alternative identifiers (for cross-referencing)
+  aliases:
+    - "ISO-27017-CLD.X.X"
+    - "PCI-DSS-X.X.X"
+
+  # Section or category
+  section: "X. Category Name"
+
+  # Short title
+  title: "Brief description of what this control checks"
+
+  # Full description
+  description: |
+    Detailed explanation of why this control is important.
+    Include context, risks, and best practices.
+
+  # Severity level
+  # Options: CRITICAL, HIGH, MEDIUM, LOW
+  severity: "HIGH"
+
+  # Compliance domains
+  domains:
+    - "cloud-security"
+    - "data-protection"
+    - "access-control"
+
+  # Cloud provider and service
+  provider: "aws"
+  services:
+    - "s3"
+    - "iam"
+
+  # IaC (Infrastructure as Code) Checks
+  iac_checks:
+    # Checkov checks
+    - tool: "checkov"
+      check_id: "CKV_AWS_XXX"
+      enabled: true
+      severity_override: null
+
+    # OPA/Rego policies
+    - tool: "opa"
+      policy_file: "policies/rego/example.rego"
+      package: "terraform.example"
+      rule: "deny"
+      enabled: true
+
+    # tfsec checks
+    - tool: "tfsec"
+      check_id: "aws-xxx-xxx"
+      enabled: true
+
+  # Runtime Checks
+  runtime_checks:
+    # InSpec profiles
+    - tool: "inspec"
+      profile: "aws-cis"
+      control_id: "cis-aws-x-x"
+      enabled: true
+      frequency: "daily"
+
+    # AWS Config Rules
+    - tool: "aws_config"
+      rule_name: "example-config-rule"
+      rule_type: "managed"  # or "custom"
+      managed_rule_identifier: "S3_BUCKET_PUBLIC_READ_PROHIBITED"
+      enabled: true
+
+    # ScoutSuite checks
+    - tool: "scoutsuite"
+      check_path: "services.s3.buckets.example-check"
+      enabled: true
+      frequency: "weekly"
+
+  # Enforcement Configuration
+  enforcement:
+    # Enforcement mode: block, alert, remediate, advisory
+    mode: "block"
+
+    # Actions to take when violation detected
+    actions:
+      # Block at IaC level (pre-deployment)
+      - type: "block_iac"
+        enabled: true
+        tools: ["checkov", "opa"]
+
+      # Alert stakeholders
+      - type: "alert"
+        enabled: true
+        channels:
+          - type: "slack"
+            webhook: "compliance-alerts"
+          - type: "email"
+            recipients: ["security@company.com"]
+        severity_threshold: "HIGH"
+
+      # Create ticket
+      - type: "ticket"
+        enabled: true
+        system: "jira"
+        project: "SEC"
+        issue_type: "Compliance Violation"
+        priority_mapping:
+          CRITICAL: "P1"
+          HIGH: "P2"
+          MEDIUM: "P3"
+          LOW: "P4"
+
+      # Automatic remediation
+      - type: "remediate"
+        enabled: false  # Set to true when remediation is safe
+        tools:
+          - "custodian"
+          - "ansible"
+        approval_required: true  # Require approval before auto-remediation
+
+  # Remediation
+  remediation:
+    # Can this be automatically remediated?
+    automated: false
+
+    # Remediation methods
+    methods:
+      # Cloud Custodian
+      - tool: "custodian"
+        policy_file: "policies/custodian/example.yml"
+        policy_name: "example-remediation"
+
+      # Ansible playbook
+      - tool: "ansible"
+        playbook: "remediation/ansible/example.yml"
+
+      # AWS Systems Manager Automation
+      - tool: "ssm_automation"
+        document: "AWS-ConfigureS3BucketEncryption"
+
+    # Manual remediation steps (if not automated)
+    manual_steps:
+      - "Step 1: Log into AWS Console"
+      - "Step 2: Navigate to the resource"
+      - "Step 3: Apply the fix"
+
+    # Estimated time to remediate
+    estimated_time: "15 minutes"
+
+    # Risk of remediation
+    risk_level: "LOW"  # LOW, MEDIUM, HIGH
+
+  # Evidence Collection
+  evidence:
+    # What evidence to collect
+    items:
+      - type: "scan_report"
+        format: "json"
+        source: "inspec"
+        retention_days: 2555  # 7 years
+
+      - type: "aws_config_snapshot"
+        format: "json"
+        retention_days: 2555
+
+      - type: "remediation_log"
+        format: "json"
+        retention_days: 2555
+
+    # Where to store evidence
+    storage:
+      type: "s3"
+      bucket: "compliance-evidence"
+      prefix: "controls/{control_id}/"
+      encryption: "aws:kms"
+
+  # Exception Handling
+  exceptions:
+    # Are exceptions allowed for this control?
+    allowed: false
+
+    # Maximum exception duration
+    max_duration_days: 90
+
+    # Who can approve exceptions?
+    approvers:
+      - "CISO"
+      - "Security Manager"
+
+    # Exception request process
+    process: "Submit via Jira ticket with business justification"
+
+  # Testing
+  testing:
+    # Unit tests for the control
+    unit_tests:
+      - "tests/unit/test_example_control.py"
+
+    # Integration tests
+    integration_tests:
+      - "tests/integration/test_example_control.py"
+
+    # Test frequency
+    test_frequency: "on_commit"
+
+  # Metrics & KPIs
+  metrics:
+    # How to measure compliance
+    - name: "compliance_rate"
+      description: "Percentage of resources compliant"
+      formula: "(compliant_resources / total_resources) * 100"
+      target: 100
+
+    - name: "mean_time_to_remediate"
+      description: "Average time to fix violations"
+      unit: "hours"
+      target: 24
+
+    - name: "false_positive_rate"
+      description: "Percentage of false positives"
+      formula: "(false_positives / total_findings) * 100"
+      target: "<5%"
+
+  # References
+  references:
+    # Official documentation
+    - type: "documentation"
+      title: "AWS Best Practices"
+      url: "https://docs.aws.amazon.com/..."
+
+    # CIS Benchmark
+    - type: "benchmark"
+      title: "CIS AWS Foundations Benchmark v1.5.0"
+      section: "X.X"
+      url: "https://www.cisecurity.org/..."
+
+    # NIST
+    - type: "framework"
+      title: "NIST CSF"
+      control: "PR.DS-X"
+
+  # Change History
+  change_history:
+    - date: "2025-12-07"
+      version: "1.0"
+      author: "Compliance Team"
+      changes: "Initial control definition"
+
+  # Status
+  status: "active"  # draft, active, deprecated
+
+  # Implementation status
+  implementation:
+    iac_checks: "completed"      # not_started, in_progress, completed
+    runtime_checks: "in_progress"
+    enforcement: "in_progress"
+    remediation: "not_started"
+    evidence: "in_progress"
+
+  # Owner
+  owner:
+    team: "Cloud Security Team"
+    contact: "cloud-security@company.com"
+
+  # Review schedule
+  review:
+    frequency: "quarterly"
+    next_review_date: "2026-03-07"
+    last_reviewed: "2025-12-07"
+    reviewed_by: "Security Architect"

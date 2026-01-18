@@ -1,0 +1,98 @@
+# Compliance-as-Code Framework - .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+ENV/
+env/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# AWS
+.aws/
+*.pem
+*.key
+
+# InSpec
+inspec.lock
+.inspec/
+
+# Testing & Reports
+*.log
+*.xml
+*.json.gz
+results/
+reports/
+evidence/*.json
+evidence/*.xml
+evidence/*.html
+!evidence/.gitkeep
+
+# Secrets & Credentials
+secrets/
+*.secret
+credentials.yml
+vault.yml
+.vault-password
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node modules (if using JS tools)
+node_modules/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compliance scan outputs
+scan-results/
+compliance-reports/
+
+# Keep template/example files
+!examples/**

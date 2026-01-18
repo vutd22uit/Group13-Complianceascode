@@ -1,0 +1,48 @@
+# Kolla-Ansible Specific InSpec Inputs
+# Use this file when scanning Kolla-deployed OpenStack
+
+# Kolla mounts config files to /etc/kolla/<service>/
+# But containers read from /var/lib/kolla/config_files/
+
+# Keystone paths
+keystone_config_file: "/etc/kolla/keystone/keystone.conf"
+keystone_paste_file: "/etc/kolla/keystone/keystone-paste.ini"
+keystone_policy_file: "/etc/kolla/keystone/policy.json"
+
+# Nova paths
+nova_config_file: "/etc/kolla/nova-api/nova.conf"
+nova_compute_config: "/etc/kolla/nova-compute/nova.conf"
+
+# Neutron paths
+neutron_config_file: "/etc/kolla/neutron-server/neutron.conf"
+neutron_ml2_config: "/etc/kolla/neutron-server/ml2_conf.ini"
+neutron_l3_config: "/etc/kolla/neutron-l3-agent/l3_agent.ini"
+neutron_dhcp_config: "/etc/kolla/neutron-dhcp-agent/dhcp_agent.ini"
+neutron_metadata_config: "/etc/kolla/neutron-metadata-agent/metadata_agent.ini"
+
+# Cinder paths
+cinder_config_file: "/etc/kolla/cinder-api/cinder.conf"
+
+# Glance paths
+glance_api_config: "/etc/kolla/glance-api/glance-api.conf"
+
+# Heat paths
+heat_config_file: "/etc/kolla/heat-api/heat.conf"
+
+# Horizon paths
+horizon_config_file: "/etc/kolla/horizon/local_settings"
+
+# Swift paths (if enabled)
+swift_config_file: "/etc/kolla/swift-proxy-server/proxy-server.conf"
+
+# Expected ownership for Kolla (containers run as specific users)
+# Kolla uses 42XXX UIDs for service users inside containers
+config_owner: "root"
+config_group: "42400"  # kolla group GID
+config_mode: "0640"
+
+# Token expiration (seconds)
+token_expiration_max: 3600
+
+# TLS minimum version
+tls_version_min: "1.2"

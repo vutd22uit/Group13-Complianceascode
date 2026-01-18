@@ -1,0 +1,231 @@
+---
+# CIS Linux Benchmark Remediation Playbook
+# Ansible playbook to harden Linux systems according to CIS Benchmark
+
+- name: CIS Linux Benchmark Remediation
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars:
+    # Password policy settings
+    password_min_length: 14
+    password_max_days: 365
+    password_min_days: 7
+    password_warn_days: 7
+    
+    # SSH settings
+    ssh_permit_root_login: "no"
+    ssh_max_auth_tries: 4
+    ssh_client_alive_interval: 300
+    ssh_client_alive_count_max: 3
+    ssh_login_grace_time: 60
+
+  tasks:
+    # =========================================================================
+    # Section 1: Initial Setup
+    # =========================================================================
+    
+    - name: "1.1.1.1 - Disable cramfs filesystem"
+      copy:
+        dest: /etc/modprobe.d/cramfs.conf
+        content: "install cramfs /bin/true\nblacklist cramfs\n"
+        owner: root
+        group: root
+        mode: '0644'
+      tags: [cis, filesystem]
+
+    - name: "1.1.1.2-6 - Disable unused filesystems"
+      copy:
+        dest: "/etc/modprobe.d/{{ item }}.conf"
+        content: "install {{ item }} /bin/true\nblacklist {{ item }}\n"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - freevxfs
+        - jffs2
+        - hfs
+        - hfsplus
+        - udf
+      tags: [cis, filesystem]
+
+    - name: "1.3.1 - Install AIDE"
+      package:
+        name: aide
+        state: present
+      tags: [cis, aide]
+
+    - name: "1.5.1 - Restrict core dumps"
+      lineinfile:
+        path: /etc/security/limits.conf
+        line: "* hard core 0"
+        state: present
+      tags: [cis, hardening]
+
+    - name: "1.5.1 - Set sysctl for core dumps"
+      sysctl:
+        name: fs.suid_dumpable
+        value: '0'
+        state: present
+        reload: yes
+      tags: [cis, hardening]
+
+    - name: "1.5.3 - Enable ASLR"
+      sysctl:
+        name: kernel.randomize_va_space
+        value: '2'
+        state: present
+        reload: yes
+      tags: [cis, hardening]
+
+    # =========================================================================
+    # Section 4: Logging and Auditing
+    # =========================================================================
+
+    - name: "4.1.1.1 - Install auditd"
+      package:
+        name: 
+          - auditd
+          - audispd-plugins
+        state: present
+      tags: [cis, auditd]
+
+    - name: "4.1.1.2 - Enable auditd service"
+      service:
+        name: auditd
+        state: started
+        enabled: yes
+      tags: [cis, auditd]
+
+    - name: "4.2.1.1 - Install rsyslog"
+      package:
+        name: rsyslog
+        state: present
+      tags: [cis, logging]
+
+    - name: "4.2.1.2 - Enable rsyslog service"
+      service:
+        name: rsyslog
+        state: started
+        enabled: yes
+      tags: [cis, logging]
+
+    # =========================================================================
+    # Section 5: Access, Authentication and Authorization
+    # =========================================================================
+
+    - name: "5.2.1 - Set permissions on sshd_config"
+      file:
+        path: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: '0600'
+      tags: [cis, ssh]
+
+    - name: "5.2.4 - Ensure SSH Protocol is 2"
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Protocol'
+        line: 'Protocol 2'
+        state: present
+      notify: restart sshd
+      tags: [cis, ssh]
+
+    - name: "5.2.8 - Disable SSH root login"
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin {{ ssh_permit_root_login }}'
+        state: present
+      notify: restart sshd
+      tags: [cis, ssh]
+
+    - name: "5.2.10 - Disable SSH PermitUserEnvironment"
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitUserEnvironment'
+        line: 'PermitUserEnvironment no'
+        state: present
+      notify: restart sshd
+      tags: [cis, ssh]
+
+    - name: "5.2.13 - Set SSH ClientAliveInterval"
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?ClientAliveInterval'
+        line: 'ClientAliveInterval {{ ssh_client_alive_interval }}'
+        state: present
+      notify: restart sshd
+      tags: [cis, ssh]
+
+    - name: "5.2.15 - Set SSH MaxAuthTries"
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?MaxAuthTries'
+        line: 'MaxAuthTries {{ ssh_max_auth_tries }}'
+        state: present
+      notify: restart sshd
+      tags: [cis, ssh]
+
+    - name: "5.3.1 - Configure password quality"
+      copy:
+        dest: /etc/security/pwquality.conf
+        content: |
+          minlen = {{ password_min_length }}
+          dcredit = -1
+          ucredit = -1
+          ocredit = -1
+          lcredit = -1
+        owner: root
+        group: root
+        mode: '0644'
+      tags: [cis, password]
+
+    - name: "5.4.1.1 - Set password max days"
+      lineinfile:
+        path: /etc/login.defs
+        regexp: '^PASS_MAX_DAYS'
+        line: 'PASS_MAX_DAYS {{ password_max_days }}'
+      tags: [cis, password]
+
+    - name: "5.4.1.2 - Set password min days"
+      lineinfile:
+        path: /etc/login.defs
+        regexp: '^PASS_MIN_DAYS'
+        line: 'PASS_MIN_DAYS {{ password_min_days }}'
+      tags: [cis, password]
+
+    # =========================================================================
+    # Section 6: System Maintenance
+    # =========================================================================
+
+    - name: "6.1.2 - Set permissions on /etc/passwd"
+      file:
+        path: /etc/passwd
+        owner: root
+        group: root
+        mode: '0644'
+      tags: [cis, permissions]
+
+    - name: "6.1.3 - Set permissions on /etc/shadow"
+      file:
+        path: /etc/shadow
+        owner: root
+        group: root
+        mode: '0640'
+      tags: [cis, permissions]
+
+    - name: "6.1.4 - Set permissions on /etc/group"
+      file:
+        path: /etc/group
+        owner: root
+        group: root
+        mode: '0644'
+      tags: [cis, permissions]
+
+  handlers:
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted

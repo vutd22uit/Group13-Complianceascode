@@ -1,0 +1,57 @@
+name: linux-cis
+title: CIS Linux Benchmark InSpec Profile
+maintainer: Compliance Team
+copyright: Compliance Team
+copyright_email: compliance@yourcompany.com
+license: MIT
+summary: InSpec profile for CIS Linux Benchmark
+version: 1.0.0
+inspec_version: '>= 5.0'
+
+supports:
+  - platform-family: linux
+  - platform-name: ubuntu
+  - platform-name: debian
+  - platform-name: redhat
+  - platform-name: centos
+  - platform-name: amazon
+
+depends:
+  - name: linux-baseline
+    url: https://github.com/dev-sec/linux-baseline
+    
+attributes:
+  - name: ssh_permit_root_login
+    type: string
+    default: 'no'
+    description: 'SSH PermitRootLogin setting'
+
+  - name: ssh_protocol
+    type: string
+    default: '2'
+    description: 'SSH protocol version'
+
+  - name: password_min_length
+    type: int
+    default: 14
+    description: 'Minimum password length'
+
+  - name: password_max_days
+    type: int
+    default: 90
+    description: 'Maximum password age in days'
+
+  - name: password_warn_days
+    type: int
+    default: 7
+    description: 'Password warning days'
+
+  - name: auditd_enabled
+    type: bool
+    default: true
+    description: 'Whether auditd should be enabled'
+
+  - name: exempt_home_users
+    type: array
+    default: []
+    description: 'List of users to exempt from home directory checks'

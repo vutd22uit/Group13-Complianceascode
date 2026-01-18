@@ -1,0 +1,257 @@
+---
+# CIS OpenStack Benchmark Remediation Playbook
+# Ansible playbook to harden OpenStack according to CIS Benchmark
+
+- name: CIS OpenStack Benchmark Remediation
+  hosts: openstack_controllers:openstack_compute:openstack_storage
+  become: yes
+  gather_facts: yes
+
+  vars:
+    # File permission settings
+    config_file_mode: '0640'
+    
+    # TLS settings
+    tls_min_version: '1.2'
+    
+    # Token settings
+    token_expiration: 3600
+    token_provider: 'fernet'
+
+  tasks:
+    # =========================================================================
+    # Section 1: Identity (Keystone)
+    # =========================================================================
+    
+    - name: "1.1 - Set keystone.conf ownership"
+      file:
+        path: /etc/keystone/keystone.conf
+        owner: root
+        group: keystone
+        mode: "{{ config_file_mode }}"
+      when: "'openstack_controllers' in group_names"
+      tags: [cis, keystone, identity]
+
+    - name: "1.2 - Secure keystone directory"
+      file:
+        path: /etc/keystone
+        owner: root
+        group: keystone
+        mode: '0750'
+        recurse: yes
+      when: "'openstack_controllers' in group_names"
+      tags: [cis, keystone]
+
+    - name: "1.3 - Disable insecure TLS protocols"
+      ini_file:
+        path: /etc/keystone/keystone.conf
+        section: ssl
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        backup: yes
+      loop:
+        - { key: 'enable_socket_ssl', value: 'true' }
+        - { key: 'tls_version_min', value: '{{ tls_min_version }}' }
+      when: "'openstack_controllers' in group_names"
+      notify: restart keystone
+      tags: [cis, keystone, tls]
+
+    - name: "1.4 - Set token expiration"
+      ini_file:
+        path: /etc/keystone/keystone.conf
+        section: token
+        option: expiration
+        value: "{{ token_expiration }}"
+        backup: yes
+      when: "'openstack_controllers' in group_names"
+      notify: restart keystone
+      tags: [cis, keystone, token]
+
+    - name: "1.5 - Disable admin_token"
+      ini_file:
+        path: /etc/keystone/keystone.conf
+        section: DEFAULT
+        option: admin_token
+        state: absent
+        backup: yes
+      when: "'openstack_controllers' in group_names"
+      notify: restart keystone
+      tags: [cis, keystone, security]
+
+    - name: "1.6 - Use Fernet tokens"
+      ini_file:
+        path: /etc/keystone/keystone.conf
+        section: token
+        option: provider
+        value: "{{ token_provider }}"
+        backup: yes
+      when: "'openstack_controllers' in group_names"
+      notify: restart keystone
+      tags: [cis, keystone, token]
+
+    # =========================================================================
+    # Section 2: Compute (Nova)
+    # =========================================================================
+
+    - name: "2.1 - Set nova.conf ownership"
+      file:
+        path: /etc/nova/nova.conf
+        owner: root
+        group: nova
+        mode: "{{ config_file_mode }}"
+      when: "'openstack_compute' in group_names or 'openstack_controllers' in group_names"
+      tags: [cis, nova, compute]
+
+    - name: "2.2 - Secure nova directory"
+      file:
+        path: /etc/nova
+        owner: root
+        group: nova
+        mode: '0750'
+        recurse: yes
+      when: "'openstack_compute' in group_names or 'openstack_controllers' in group_names"
+      tags: [cis, nova]
+
+    - name: "2.3 - Secure VNC configuration"
+      ini_file:
+        path: /etc/nova/nova.conf
+        section: vnc
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        backup: yes
+      loop:
+        - { key: 'enabled', value: 'true' }
+        - { key: 'novncproxy_host', value: '127.0.0.1' }
+      when: "'openstack_compute' in group_names"
+      notify: restart nova-compute
+      tags: [cis, nova, vnc]
+
+    - name: "2.9 - Enable secure live migration"
+      ini_file:
+        path: /etc/nova/nova.conf
+        section: libvirt
+        option: live_migration_tunnelled
+        value: 'true'
+        backup: yes
+      when: "'openstack_compute' in group_names"
+      notify: restart nova-compute
+      tags: [cis, nova, migration]
+
+    # =========================================================================
+    # Section 3: Networking (Neutron)
+    # =========================================================================
+
+    - name: "3.1 - Set neutron.conf ownership"
+      file:
+        path: /etc/neutron/neutron.conf
+        owner: root
+        group: neutron
+        mode: "{{ config_file_mode }}"
+      when: "'openstack_controllers' in group_names"
+      tags: [cis, neutron, networking]
+
+    - name: "3.2 - Secure neutron directory"
+      file:
+        path: /etc/neutron
+        owner: root
+        group: neutron
+        mode: '0750'
+        recurse: yes
+      when: "'openstack_controllers' in group_names"
+      tags: [cis, neutron]
+
+    - name: "3.3 - Enable SSL for Neutron API"
+      ini_file:
+        path: /etc/neutron/neutron.conf
+        section: ssl
+        option: use_ssl
+        value: 'true'
+        backup: yes
+      when: "'openstack_controllers' in group_names"
+      notify: restart neutron-server
+      tags: [cis, neutron, ssl]
+
+    - name: "3.4 - Set auth_strategy to keystone"
+      ini_file:
+        path: /etc/neutron/neutron.conf
+        section: DEFAULT
+        option: auth_strategy
+        value: 'keystone'
+        backup: yes
+      when: "'openstack_controllers' in group_names"
+      notify: restart neutron-server
+      tags: [cis, neutron, auth]
+
+    # =========================================================================
+    # Section 4: Storage (Cinder/Swift)
+    # =========================================================================
+
+    - name: "4.1 - Set cinder.conf ownership"
+      file:
+        path: /etc/cinder/cinder.conf
+        owner: root
+        group: cinder
+        mode: "{{ config_file_mode }}"
+      when: "'openstack_storage' in group_names or 'openstack_controllers' in group_names"
+      tags: [cis, cinder, storage]
+
+    - name: "4.2 - Secure cinder directory"
+      file:
+        path: /etc/cinder
+        owner: root
+        group: cinder
+        mode: '0750'
+        recurse: yes
+      when: "'openstack_storage' in group_names or 'openstack_controllers' in group_names"
+      tags: [cis, cinder]
+
+    - name: "4.3 - Set NAS secure file permissions"
+      ini_file:
+        path: /etc/cinder/cinder.conf
+        section: DEFAULT
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        backup: yes
+      loop:
+        - { key: 'nas_secure_file_permissions', value: 'auto' }
+        - { key: 'nas_secure_file_operations', value: 'auto' }
+      when: "'openstack_storage' in group_names"
+      notify: restart cinder-volume
+      tags: [cis, cinder, nas]
+
+    - name: "4.4 - Check Swift hash configuration exists"
+      stat:
+        path: /etc/swift/swift.conf
+      register: swift_conf
+      when: "'openstack_storage' in group_names"
+      tags: [cis, swift]
+
+    - name: "4.4 - Warn if Swift hash is default"
+      debug:
+        msg: "WARNING: Ensure swift_hash_path_prefix and suffix are changed from default!"
+      when: 
+        - "'openstack_storage' in group_names"
+        - swift_conf.stat.exists
+      tags: [cis, swift]
+
+  handlers:
+    - name: restart keystone
+      service:
+        name: apache2
+        state: restarted
+      when: ansible_os_family == "Debian"
+
+    - name: restart nova-compute
+      service:
+        name: nova-compute
+        state: restarted
+
+    - name: restart neutron-server
+      service:
+        name: neutron-server
+        state: restarted
+
+    - name: restart cinder-volume
+      service:
+        name: cinder-volume
+        state: restarted

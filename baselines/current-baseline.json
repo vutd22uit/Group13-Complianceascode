@@ -1,0 +1,1338 @@
+{
+  "platform": {
+    "name": "openstack",
+    "release": "yoga"
+  },
+  "profiles": [
+    {
+      "name": "openstack-cis",
+      "version": "1.0.0",
+      "controls": [
+        {
+          "id": "CIS-OS-1",
+          "title": "Compliant Control 1",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-2",
+          "title": "Compliant Control 2",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-3",
+          "title": "Compliant Control 3",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-4",
+          "title": "Compliant Control 4",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-5",
+          "title": "Compliant Control 5",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-6",
+          "title": "Compliant Control 6",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-7",
+          "title": "Compliant Control 7",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-8",
+          "title": "Compliant Control 8",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-9",
+          "title": "Compliant Control 9",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-10",
+          "title": "Compliant Control 10",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-11",
+          "title": "Compliant Control 11",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-12",
+          "title": "Compliant Control 12",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-13",
+          "title": "Compliant Control 13",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-14",
+          "title": "Compliant Control 14",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-15",
+          "title": "Compliant Control 15",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-16",
+          "title": "Compliant Control 16",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-17",
+          "title": "Compliant Control 17",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-18",
+          "title": "Compliant Control 18",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-19",
+          "title": "Compliant Control 19",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-20",
+          "title": "Compliant Control 20",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-21",
+          "title": "Compliant Control 21",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-22",
+          "title": "Compliant Control 22",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-23",
+          "title": "Compliant Control 23",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-24",
+          "title": "Compliant Control 24",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-25",
+          "title": "Compliant Control 25",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-26",
+          "title": "Compliant Control 26",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-27",
+          "title": "Compliant Control 27",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-28",
+          "title": "Compliant Control 28",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-29",
+          "title": "Compliant Control 29",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-30",
+          "title": "Compliant Control 30",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-31",
+          "title": "Compliant Control 31",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-32",
+          "title": "Compliant Control 32",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-33",
+          "title": "Compliant Control 33",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-34",
+          "title": "Compliant Control 34",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-35",
+          "title": "Compliant Control 35",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-36",
+          "title": "Compliant Control 36",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-37",
+          "title": "Compliant Control 37",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-38",
+          "title": "Compliant Control 38",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-39",
+          "title": "Compliant Control 39",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-40",
+          "title": "Compliant Control 40",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-41",
+          "title": "Compliant Control 41",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-42",
+          "title": "Compliant Control 42",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-43",
+          "title": "Compliant Control 43",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-44",
+          "title": "Compliant Control 44",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-45",
+          "title": "Compliant Control 45",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-46",
+          "title": "Compliant Control 46",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-47",
+          "title": "Compliant Control 47",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-48",
+          "title": "Compliant Control 48",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-49",
+          "title": "Compliant Control 49",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-50",
+          "title": "Compliant Control 50",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-51",
+          "title": "Compliant Control 51",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-52",
+          "title": "Compliant Control 52",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-53",
+          "title": "Compliant Control 53",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-54",
+          "title": "Compliant Control 54",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-55",
+          "title": "Compliant Control 55",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-56",
+          "title": "Compliant Control 56",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-57",
+          "title": "Compliant Control 57",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-58",
+          "title": "Compliant Control 58",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-59",
+          "title": "Compliant Control 59",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-60",
+          "title": "Compliant Control 60",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-61",
+          "title": "Compliant Control 61",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-62",
+          "title": "Compliant Control 62",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-63",
+          "title": "Compliant Control 63",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-64",
+          "title": "Compliant Control 64",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-65",
+          "title": "Compliant Control 65",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-66",
+          "title": "Compliant Control 66",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-67",
+          "title": "Compliant Control 67",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-68",
+          "title": "Compliant Control 68",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-69",
+          "title": "Compliant Control 69",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-70",
+          "title": "Compliant Control 70",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-71",
+          "title": "Compliant Control 71",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-72",
+          "title": "Compliant Control 72",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-73",
+          "title": "Compliant Control 73",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-74",
+          "title": "Compliant Control 74",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-75",
+          "title": "Compliant Control 75",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-76",
+          "title": "Compliant Control 76",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-77",
+          "title": "Compliant Control 77",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-78",
+          "title": "Compliant Control 78",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-79",
+          "title": "Compliant Control 79",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-80",
+          "title": "Compliant Control 80",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-81",
+          "title": "Compliant Control 81",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-82",
+          "title": "Compliant Control 82",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-83",
+          "title": "Compliant Control 83",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-84",
+          "title": "Compliant Control 84",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-85",
+          "title": "Compliant Control 85",
+          "desc": "This control is compliant.",
+          "impact": 0.5,
+          "tags": {
+            "severity": "medium"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "Check passed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-FAIL-1",
+          "title": "Failed Control 1",
+          "desc": "This control has failed validation.",
+          "impact": 0.3,
+          "tags": {
+            "severity": "low"
+          },
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "Check failed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-FAIL-2",
+          "title": "Failed Control 2",
+          "desc": "This control has failed validation.",
+          "impact": 0.3,
+          "tags": {
+            "severity": "low"
+          },
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "Check failed"
+            }
+          ]
+        },
+        {
+          "id": "CIS-OS-FAIL-3",
+          "title": "Failed Control 3",
+          "desc": "This control has failed validation.",
+          "impact": 0.3,
+          "tags": {
+            "severity": "low"
+          },
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "Check failed"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "statistics": {
+    "duration": 4.5
+  },
+  "version": "5.22.0"
+}
