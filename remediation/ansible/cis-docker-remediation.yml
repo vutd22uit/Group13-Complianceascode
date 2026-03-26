@@ -1,0 +1,306 @@
+---
+# ============================================================
+# CIS Docker Benchmark v1.6.0 - Ansible Remediation Playbook
+# ============================================================
+# This playbook hardens Docker host configuration according to
+# the CIS Docker Benchmark v1.6.0 recommendations.
+#
+# Usage:
+#   Dry-run:  ansible-playbook cis-docker-remediation.yml --check --diff -i localhost,
+#   Apply:    ansible-playbook cis-docker-remediation.yml -i localhost,
+# ============================================================
+
+- name: CIS Docker Benchmark v1.6.0 - Host Hardening
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars:
+    docker_daemon_config_file: /etc/docker/daemon.json
+    docker_data_dir: /var/lib/docker
+    docker_log_level: info
+    docker_icc_enabled: false
+    docker_no_new_privileges: true
+    docker_live_restore: true
+    docker_userland_proxy: false
+    docker_log_driver: json-file
+    docker_log_opts:
+      max-size: "10m"
+      max-file: "3"
+    docker_default_ulimits:
+      nofile:
+        hard: 64000
+        soft: 64000
+    # Audit configuration
+    setup_audit_rules: true
+
+  tasks:
+    # =========================================================================
+    # Section 1: Host Configuration
+    # =========================================================================
+
+    - name: "CIS 1.1.1 - Ensure Docker data directory exists on separate partition (check)"
+      shell: "findmnt {{ docker_data_dir }} || echo 'NOT_MOUNTED'"
+      register: docker_partition_check
+      changed_when: false
+      tags: [cis, docker, section1]
+
+    - name: "CIS 1.1.1 - Warn if Docker data not on separate partition"
+      debug:
+        msg: "WARNING: {{ docker_data_dir }} is not on a separate partition. Consider moving it."
+      when: "'NOT_MOUNTED' in docker_partition_check.stdout"
+      tags: [cis, docker, section1]
+
+    - name: "CIS 1.2.1 - Install auditd for host hardening"
+      package:
+        name: auditd
+        state: present
+      tags: [cis, docker, section1, audit]
+
+    - name: "CIS 1.2.1 - Enable and start auditd"
+      service:
+        name: auditd
+        enabled: yes
+        state: started
+      tags: [cis, docker, section1, audit]
+
+    # =========================================================================
+    # Section 1.1.3-1.1.6: Audit Rules for Docker
+    # =========================================================================
+
+    - name: "CIS 1.1.3-1.1.6 - Configure audit rules for Docker daemon and files"
+      blockinfile:
+        path: /etc/audit/rules.d/docker.rules
+        create: yes
+        owner: root
+        group: root
+        mode: '0640'
+        block: |
+          # CIS Docker Benchmark - Audit Rules
+          # CIS 1.1.3: Audit Docker daemon
+          -w /usr/bin/dockerd -k docker
+
+          # CIS 1.1.4: Audit Docker data directory
+          -w /var/lib/docker -k docker
+
+          # CIS 1.1.5: Audit Docker config directory
+          -w /etc/docker -k docker
+
+          # CIS 1.1.6: Audit Docker service file
+          -w /lib/systemd/system/docker.service -k docker
+          -w /usr/lib/systemd/system/docker.service -k docker
+
+          # CIS 1.1.7: Audit Docker socket
+          -w /lib/systemd/system/docker.socket -k docker
+
+          # CIS 1.1.8: Audit /etc/default/docker
+          -w /etc/default/docker -k docker
+
+          # CIS 1.1.9: Audit /etc/docker/daemon.json
+          -w /etc/docker/daemon.json -k docker
+
+          # CIS 1.1.10: Audit /usr/bin/docker-containerd
+          -w /usr/bin/docker-containerd -k docker
+
+          # CIS 1.1.11: Audit /usr/bin/docker-runc
+          -w /usr/bin/docker-runc -k docker
+      when: setup_audit_rules
+      notify: reload auditd
+      tags: [cis, docker, section1, audit]
+
+    # =========================================================================
+    # Section 2: Docker Daemon Configuration
+    # =========================================================================
+
+    - name: "CIS 2 - Ensure /etc/docker directory exists with correct permissions"
+      file:
+        path: /etc/docker
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      tags: [cis, docker, section2, section3]
+
+    - name: "CIS 2 - Read existing daemon.json if present"
+      slurp:
+        src: "{{ docker_daemon_config_file }}"
+      register: existing_daemon_config
+      failed_when: false
+      tags: [cis, docker, section2]
+
+    - name: "CIS 2 - Parse existing daemon config"
+      set_fact:
+        current_daemon_config: "{{ (existing_daemon_config.content | b64decode | from_json) if existing_daemon_config.content is defined else {} }}"
+      tags: [cis, docker, section2]
+
+    - name: "CIS 2 - Build CIS-compliant daemon.json configuration"
+      set_fact:
+        cis_daemon_config:
+          # CIS 2.2: Disable inter-container communication
+          icc: "{{ docker_icc_enabled }}"
+          # CIS 2.3: Set log level to info
+          log-level: "{{ docker_log_level }}"
+          # CIS 2.6: Use overlay2 storage driver (not aufs)
+          storage-driver: "overlay2"
+          # CIS 2.7: TLS configuration (uncomment and configure for TCP access)
+          # tls: true
+          # tlscacert: "/etc/docker/ca.pem"
+          # tlscert: "/etc/docker/server-cert.pem"
+          # tlskey: "/etc/docker/server-key.pem"
+          # tlsverify: true
+          # CIS 2.8: Set default ulimits
+          default-ulimits: "{{ docker_default_ulimits }}"
+          # CIS 2.9: Enable user namespace remapping (set to 'default' to enable)
+          # userns-remap: "default"
+          # CIS 2.13: Configure centralized logging
+          log-driver: "{{ docker_log_driver }}"
+          log-opts: "{{ docker_log_opts }}"
+          # CIS 2.14: Restrict privilege escalation
+          no-new-privileges: "{{ docker_no_new_privileges }}"
+          # CIS 2.15: Enable live restore
+          live-restore: "{{ docker_live_restore }}"
+          # CIS 2.16: Disable userland proxy
+          userland-proxy: "{{ docker_userland_proxy }}"
+          # CIS 2.18: Disable experimental features
+          experimental: false
+      tags: [cis, docker, section2]
+
+    - name: "CIS 2 - Write CIS-compliant daemon.json"
+      copy:
+        content: "{{ cis_daemon_config | to_nice_json }}"
+        dest: "{{ docker_daemon_config_file }}"
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+      notify: restart docker
+      tags: [cis, docker, section2]
+
+    # =========================================================================
+    # Section 3: Docker Daemon Configuration Files
+    # =========================================================================
+
+    - name: "CIS 3.5/3.6 - Ensure /etc/docker ownership and permissions"
+      file:
+        path: /etc/docker
+        owner: root
+        group: root
+        mode: '0755'
+        recurse: no
+      tags: [cis, docker, section3]
+
+    - name: "CIS 3.17/3.18 - Ensure daemon.json ownership and permissions"
+      file:
+        path: "{{ docker_daemon_config_file }}"
+        owner: root
+        group: root
+        mode: '0644'
+      when: docker_daemon_config_file is file
+      tags: [cis, docker, section3]
+
+    - name: "CIS 3.15/3.16 - Ensure Docker socket ownership is root:docker"
+      file:
+        path: /var/run/docker.sock
+        owner: root
+        group: docker
+        mode: '0660'
+      when: ansible_facts['system'] == 'Linux'
+      tags: [cis, docker, section3]
+
+    - name: "CIS 3.1/3.2 - Ensure docker.service ownership and permissions"
+      file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - /lib/systemd/system/docker.service
+        - /usr/lib/systemd/system/docker.service
+      failed_when: false
+      tags: [cis, docker, section3]
+
+    - name: "CIS 3.3/3.4 - Ensure docker.socket ownership and permissions"
+      file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - /lib/systemd/system/docker.socket
+        - /usr/lib/systemd/system/docker.socket
+      failed_when: false
+      tags: [cis, docker, section3]
+
+    # =========================================================================
+    # Section 4: Docker Image Security
+    # =========================================================================
+
+    - name: "CIS 4.5 - Enable Docker Content Trust"
+      lineinfile:
+        path: /etc/environment
+        regexp: '^DOCKER_CONTENT_TRUST='
+        line: 'DOCKER_CONTENT_TRUST=1'
+        state: present
+        create: yes
+        owner: root
+        group: root
+        mode: '0644'
+      tags: [cis, docker, section4]
+
+    - name: "CIS 4.4 - Install Trivy vulnerability scanner"
+      block:
+        - name: "Check if Trivy is already installed"
+          command: which trivy
+          register: trivy_check
+          changed_when: false
+          failed_when: false
+
+        - name: "Install Trivy for image vulnerability scanning"
+          shell: |
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          when: trivy_check.rc != 0
+          args:
+            creates: /usr/local/bin/trivy
+      tags: [cis, docker, section4, scanner]
+
+    # =========================================================================
+    # Section 5: Container Runtime (Baseline policy enforcement)
+    # =========================================================================
+
+    - name: "CIS 5 - Stop and remove privileged running containers (dry-run warning)"
+      shell: "docker ps --quiet --filter 'status=running' 2>/dev/null | xargs -r docker inspect --format '{{.Name}} Privileged={{.HostConfig.Privileged}}' 2>/dev/null | grep 'Privileged=true' || true"
+      register: privileged_containers
+      changed_when: false
+      tags: [cis, docker, section5]
+
+    - name: "CIS 5.4 - Report privileged containers (must be fixed manually)"
+      debug:
+        msg: "WARNING: Privileged containers found (must be manually remediated):\n{{ privileged_containers.stdout }}"
+      when: privileged_containers.stdout | length > 0
+      tags: [cis, docker, section5]
+
+    - name: "CIS 6.2 - Remove stopped/exited containers to prevent sprawl"
+      shell: "docker container prune -f 2>/dev/null || true"
+      changed_when: false
+      tags: [cis, docker, section6]
+
+    # =========================================================================
+    # Docker service management
+    # =========================================================================
+
+    - name: "Ensure Docker service is enabled"
+      service:
+        name: docker
+        enabled: yes
+      tags: [cis, docker]
+
+  handlers:
+    - name: restart docker
+      service:
+        name: docker
+        state: restarted
+
+    - name: reload auditd
+      service:
+        name: auditd
+        state: reloaded

@@ -1,0 +1,51 @@
+name: docker-cis
+title: CIS Docker Benchmark InSpec Profile
+maintainer: Compliance Team
+copyright: Compliance Team
+copyright_email: compliance@yourcompany.com
+license: MIT
+summary: InSpec profile for CIS Docker Benchmark v1.6.0
+version: 1.0.0
+inspec_version: '>= 5.0'
+
+supports:
+  - platform-name: ubuntu
+  - platform-name: debian
+  - platform-name: redhat
+  - platform-name: centos
+
+inputs:
+  - name: docker_daemon_conf
+    type: string
+    default: '/etc/docker/daemon.json'
+    description: 'Path to Docker daemon configuration file'
+
+  - name: docker_service_file
+    type: string
+    default: '/lib/systemd/system/docker.service'
+    description: 'Path to Docker systemd service file'
+
+  - name: docker_socket_file
+    type: string
+    default: '/var/run/docker.sock'
+    description: 'Path to Docker socket file'
+
+  - name: docker_certs_dir
+    type: string
+    default: '/etc/docker/certs.d'
+    description: 'Path to Docker TLS certificates directory'
+
+  - name: allowed_registry_hosts
+    type: array
+    default: []
+    description: 'List of allowed registry hosts for image pulls'
+
+  - name: max_container_restart
+    type: integer
+    default: 5
+    description: 'Maximum container restart count for on-failure policy'
+
+  - name: docker_data_dir
+    type: string
+    default: '/var/lib/docker'
+    description: 'Docker data directory (should be on separate partition)'

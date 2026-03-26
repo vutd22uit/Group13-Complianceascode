@@ -5,7 +5,7 @@
 # Last Updated: 2025-12-29
 # ============================================
 
-.PHONY: all help install scan report dashboard remediate clean test lint
+.PHONY: all help install scan report dashboard remediate clean test lint scan-docker remediate-docker test-docker
 
 # Default target
 all: help
@@ -17,19 +17,24 @@ help:
 	@echo "╔══════════════════════════════════════════════════════════════════╗"
 	@echo "║           Compliance-as-Code Framework - CLI                     ║"
 	@echo "╠══════════════════════════════════════════════════════════════════╣"
-	@echo "║  make install      - Install all dependencies                    ║"
-	@echo "║  make scan         - Run full compliance scan (demo mode)        ║"
-	@echo "║  make scan-live    - Run scan against live OpenStack             ║"
-	@echo "║  make report       - Generate HTML compliance report             ║"
-	@echo "║  make dashboard    - Start Grafana/Prometheus dashboard          ║"
+	@echo "║  make install        - Install all dependencies                  ║"
+	@echo "║  make scan           - Run full compliance scan (demo mode)      ║"
+	@echo "║  make scan-live      - Run scan against live OpenStack           ║"
+	@echo "║  make scan-docker    - Run CIS Docker Benchmark scan (local)     ║"
+	@echo "║  make scan-docker-host - Scan remote Docker host via SSH         ║"
+	@echo "║  make report         - Generate HTML compliance report           ║"
+	@echo "║  make dashboard      - Start Grafana/Prometheus dashboard        ║"
 	@echo "║  make dashboard-stop - Stop the dashboard                        ║"
-	@echo "║  make remediate    - Run auto-remediation (dry-run)              ║"
+	@echo "║  make remediate      - Run auto-remediation (dry-run)            ║"
 	@echo "║  make remediate-apply - Apply remediation (CAUTION!)             ║"
-	@echo "║  make test         - Run all tests (InSpec, OPA, Python)         ║"
-	@echo "║  make lint         - Lint all code (Ansible, Python, Rego)       ║"
-	@echo "║  make baseline     - Save current compliance as baseline         ║"
-	@echo "║  make diff         - Compare current scan with baseline          ║"
-	@echo "║  make clean        - Clean temporary files and cache             ║"
+	@echo "║  make remediate-docker - Run Docker CIS remediation (dry-run)    ║"
+	@echo "║  make remediate-docker-apply - Apply Docker CIS remediation      ║"
+	@echo "║  make test           - Run all tests (InSpec, OPA, Python)       ║"
+	@echo "║  make test-docker    - Run Docker CIS OPA policy tests           ║"
+	@echo "║  make lint           - Lint all code (Ansible, Python, Rego)     ║"
+	@echo "║  make baseline       - Save current compliance as baseline       ║"
+	@echo "║  make diff           - Compare current scan with baseline        ║"
+	@echo "║  make clean          - Clean temporary files and cache           ║"
 	@echo "╚══════════════════════════════════════════════════════════════════╝"
 
 # ============================================
@@ -96,6 +101,43 @@ endif
 	@echo "✅ Linux scan completed."
 
 # ============================================
+# Docker CIS Benchmark Scanning
+# ============================================
+scan-docker:
+	@echo "🐳 Running CIS Docker Benchmark scan (local Docker host)..."
+	@mkdir -p $(RESULTS_DIR)
+	inspec exec tests/inspec/docker-cis \
+		--chef-license=accept-silent \
+		--reporter cli json:$(RESULTS_DIR)/docker-cis-$(TIMESTAMP).json \
+		|| true
+	@echo "✅ Docker CIS scan completed. Results: $(RESULTS_DIR)/docker-cis-$(TIMESTAMP).json"
+
+scan-docker-host:
+ifndef TARGET_HOST
+	$(error TARGET_HOST is not set. Example: make scan-docker-host TARGET_HOST=10.0.0.3)
+endif
+ifndef DOCKER_SSH_USER
+	$(eval DOCKER_SSH_USER := root)
+endif
+	@echo "🐳 Running CIS Docker Benchmark scan against $(TARGET_HOST)..."
+	@mkdir -p $(RESULTS_DIR)
+	inspec exec tests/inspec/docker-cis \
+		-t ssh://$(DOCKER_SSH_USER)@$(TARGET_HOST) \
+		--chef-license=accept-silent \
+		--reporter cli json:$(RESULTS_DIR)/docker-cis-$(TARGET_HOST)-$(TIMESTAMP).json \
+		html:$(RESULTS_DIR)/docker-cis-$(TARGET_HOST)-$(TIMESTAMP).html \
+		|| true
+	@echo "✅ Remote Docker CIS scan completed."
+
+scan-docker-opa:
+	@echo "🔍 Running Docker CIS OPA policy evaluation..."
+	@mkdir -p $(RESULTS_DIR)
+	@echo '{"containers":[],"daemon_config":{},"images":[]}' | \
+		opa eval -d policies/rego/docker.rego -I 'data.docker.cis.summary' \
+		> $(RESULTS_DIR)/docker-opa-$(TIMESTAMP).json || true
+	@echo "✅ Docker OPA evaluation completed."
+
+# ============================================
 # Reporting
 # ============================================
 report:
@@ -151,10 +193,26 @@ remediate-apply:
 		echo "❌ Remediation cancelled."; \
 	fi
 
+remediate-docker:
+	@echo "🐳 Running Docker CIS remediation (DRY-RUN mode)..."
+	ansible-playbook remediation/ansible/cis-docker-remediation.yml \
+		--check --diff \
+		-i localhost,
+	@echo "✅ Docker CIS dry-run completed. Review the changes above."
+
+remediate-docker-apply:
+	@echo "⚠️  WARNING: This will harden Docker configuration on your host!"
+	@read -p "Are you sure? (yes/no): " confirm; \
+	if [ "$$confirm" = "yes" ]; then \
+		ansible-playbook remediation/ansible/cis-docker-remediation.yml -i localhost,; \
+	else \
+		echo "❌ Docker remediation cancelled."; \
+	fi
+
 # ============================================
 # Testing
 # ============================================
-test: test-opa test-inspec test-python
+test: test-opa test-inspec test-python test-docker
 	@echo "✅ All tests passed!"
 
 test-opa:
@@ -166,7 +224,13 @@ test-inspec:
 	@echo "🧪 Validating InSpec profiles..."
 	inspec check tests/inspec/openstack-cis --chef-license=accept-silent
 	inspec check tests/inspec/linux-cis --chef-license=accept-silent || true
+	inspec check tests/inspec/docker-cis --chef-license=accept-silent || true
 	@echo "✅ InSpec profiles validated."
+
+test-docker:
+	@echo "🐳 Running Docker CIS OPA policy tests..."
+	opa test policies/rego/docker.rego policies/rego/docker_test.rego -v
+	@echo "✅ Docker CIS OPA tests passed."
 
 test-python:
 	@echo "🧪 Running Python tests..."

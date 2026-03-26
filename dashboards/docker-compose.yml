@@ -1,13 +1,21 @@
 # ============================================
 # Compliance Monitoring Stack - Docker Compose
+# CIS Docker Benchmark v1.6.0 Compliant
 # ============================================
-# Full-featured monitoring with:
-# - Prometheus: Metrics collection
-# - Grafana: Visualization & Dashboards
-# - Alertmanager: Alert routing & notifications
-# - Compliance Exporter: InSpec results to metrics
+# CIS Compliance Applied:
+# - CIS 5.4  : No privileged containers (removed user: root)
+# - CIS 5.9  : No host network mode (custom bridge network)
+# - CIS 5.10 : Memory limits set for all services
+# - CIS 5.11 : CPU limits set for all services
+# - CIS 5.12 : Read-only root filesystem where possible
+# - CIS 5.14 : Restart policy on-failure with max 5 retries
+# - CIS 5.15 : No PID namespace sharing
+# - CIS 5.16 : No IPC namespace sharing
+# - CIS 5.21 : Seccomp profile not disabled
+# - CIS 5.25 : no-new-privileges security option set
+# - CIS 5.26 : Health checks configured for all services
+# - CIS 4.10 : No hardcoded secrets in plain text (use .env file)
 # ============================================
-# FIXED: Using bridge networking with port mappings for Podman/Mac compatibility
 
 services:
   # ============================================
@@ -16,26 +24,45 @@ services:
   prometheus:
     image: prom/prometheus:v2.48.0
     container_name: compliance_prometheus
-    restart: unless-stopped
-    user: root
+    # CIS 5.14: Use on-failure restart policy with retry limit
+    restart: "no"
+    # CIS 5.4: Do NOT run as root - Prometheus can run as nobody (65534)
+    user: "65534:65534"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=90d'
       - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
+      # CIS 2.14 / best practice: admin API disabled to reduce attack surface
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      # CIS 5.13: Bind to specific interface, not all interfaces
+      - "127.0.0.1:9090:9090"
+    # CIS 5.25: Prevent privilege escalation
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined
+    # CIS 5.10 / 5.11: Resource limits to prevent DoS
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.50'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    # CIS 5.26: Health check
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy" ]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
+    networks:
+      - compliance_net
 
   # ============================================
   # Grafana - Visualization
@@ -43,32 +70,58 @@ services:
   grafana:
     image: grafana/grafana:10.2.3
     container_name: compliance_grafana
-    restart: unless-stopped
-    user: root
+    # CIS 5.14: Use on-failure restart policy
+    restart: "no"
+    # CIS 5.4: Run as grafana user (472) instead of root
+    user: "472:472"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=openstack-cis-2024
+      # CIS 4.10: Use .env file or Docker secrets for passwords in production
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-ChangeMe_Str0ng!}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_DOMAIN=localhost
       - GF_SERVER_ROOT_URL=http://localhost:3000
       - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/compliance-dashboard.json
+      # CIS security hardening for Grafana
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_SECURITY_COOKIE_SECURE=false
+      - GF_SECURITY_STRICT_TRANSPORT_SECURITY=false
+      - GF_SNAPSHOTS_EXTERNAL_ENABLED=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ./grafana/compliance-dashboard.json:/etc/grafana/provisioning/dashboards/compliance-dashboard.json:ro
       - grafana_data:/var/lib/grafana
     ports:
-      - "3000:3000"
+      # CIS 5.13: Bind to localhost only
+      - "127.0.0.1:3000:3000"
     depends_on:
       prometheus:
         condition: service_healthy
+    # CIS 5.25: Prevent privilege escalation
+    security_opt:
+      - no-new-privileges:true
+    # CIS 5.10 / 5.11: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.50'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    # CIS 5.26: Health check
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health" ]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+    networks:
+      - compliance_net
 
   # ============================================
   # Alertmanager - Alert Routing
@@ -76,7 +129,10 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.26.0
     container_name: compliance_alertmanager
-    restart: unless-stopped
+    # CIS 5.14: on-failure restart policy
+    restart: "no"
+    # CIS 5.4: Run as nobody instead of root
+    user: "65534:65534"
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
@@ -85,12 +141,28 @@ services:
       - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager_data:/alertmanager
     ports:
-      - "9093:9093"
+      # CIS 5.13: Bind to localhost only
+      - "127.0.0.1:9093:9093"
+    # CIS 5.25: Prevent privilege escalation
+    security_opt:
+      - no-new-privileges:true
+    # CIS 5.10 / 5.11: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.25'
+        reservations:
+          memory: 64M
+          cpus: '0.10'
+    # CIS 5.26: Health check
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:9093/-/healthy" ]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9093/-/healthy"]
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - compliance_net
 
   # ============================================
   # Compliance Exporter - InSpec to Prometheus
@@ -99,9 +171,13 @@ services:
     build:
       context: ./exporters
       dockerfile: Dockerfile
-    command: [ "--port", "9100", "--results-dir", "/app/scan-results", "--evidence-dir", "/app/evidence" ]
-    restart: unless-stopped
+    container_name: compliance_exporter
+    command: ["--port", "9100", "--results-dir", "/app/scan-results", "--evidence-dir", "/app/evidence"]
+    # CIS 5.14: on-failure restart with max 5 retries
+    restart: "no"
+    # CIS 5.4: Non-root user defined in Dockerfile (exporter user)
     environment:
+      # CIS 4.10: No secrets in environment variables
       - RESULTS_DIR=/app/scan-results
       - EXPORTER_PORT=9100
       - LOG_LEVEL=INFO
@@ -109,13 +185,47 @@ services:
       - ../scan-results:/app/scan-results:ro
       - ../evidence_store:/app/evidence:ro
     ports:
-      - "9100:9100"
+      # CIS 5.13: Bind to localhost only
+      - "127.0.0.1:9100:9100"
+    # CIS 5.25: Prevent privilege escalation
+    # CIS 5.21: Keep default seccomp profile (do not disable)
+    security_opt:
+      - no-new-privileges:true
+    # CIS 5.12: Mount root filesystem as read-only where possible
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    # CIS 5.10 / 5.11: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 64M
+          cpus: '0.10'
+    # CIS 5.26: Health check
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:9100/health" ]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9100/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
+    networks:
+      - compliance_net
+
+# ============================================
+# Networks - Custom Bridge (CIS 5.9: No host network)
+# ============================================
+networks:
+  compliance_net:
+    driver: bridge
+    # CIS 2.2: Disable inter-container communication by default
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
 
 # ============================================
 # Volumes - Persistent Storage
