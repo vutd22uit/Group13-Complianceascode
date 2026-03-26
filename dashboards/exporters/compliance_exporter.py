@@ -29,53 +29,40 @@ class ComplianceMetrics:
     def __init__(self, results_dir: str, evidence_dir: str = None):
         self.results_dir = results_dir
         self.evidence_dir = evidence_dir or os.path.join(results_dir, 'evidence_store')
-        self.metrics = {}
         self.last_update = None
+        # Initialize with zero metrics so get_prometheus_format() is always safe to call
+        self.metrics = self._empty_metrics()
 
-    def update_metrics(self):
-        """Update metrics from latest scan results"""
-        logger.info("Updating compliance metrics...")
-
-        # Initialize metrics
-        self.metrics = {
-            # Overall compliance
+    def _empty_metrics(self) -> dict:
+        """Return a zeroed-out metrics dict"""
+        return {
             'openstack_compliance_score_percent': 0,
             'openstack_controls_total': 0,
             'openstack_controls_passed': 0,
             'openstack_controls_failed': 0,
             'openstack_controls_skipped': 0,
-
-            # By severity
             'openstack_critical_compliance_percent': 0,
             'openstack_high_compliance_percent': 0,
             'openstack_medium_compliance_percent': 0,
             'openstack_low_compliance_percent': 0,
-
-            # By service
             'openstack_service_compliance': {},
             'openstack_service_controls': {},
-
-            # Findings
-            'openstack_findings_by_severity': {
-                'critical': 0,
-                'high': 0,
-                'medium': 0,
-                'low': 0
-            },
-
-            # Evidence & Remediation
+            'openstack_findings_by_severity': {'critical': 0, 'high': 0, 'medium': 0, 'low': 0},
             'openstack_evidence_collected_total': 0,
             'openstack_remediations_total': 0,
             'openstack_remediations_auto': 0,
             'openstack_mttr_hours': 0,
             'openstack_mttd_minutes': 0,
-
-            # Control status (for table)
             'openstack_control_status': [],
-
-            # Timestamps
-            'openstack_last_scan_timestamp': 0
+            'openstack_last_scan_timestamp': 0,
         }
+
+    def update_metrics(self):
+        """Update metrics from latest scan results"""
+        logger.info("Updating compliance metrics...")
+
+        # Reset to zero baseline
+        self.metrics = self._empty_metrics()
 
         # Find latest InSpec result
         inspec_files = glob.glob(os.path.join(self.results_dir, '**/*.json'), recursive=True)
@@ -126,7 +113,8 @@ class ComplianceMetrics:
             'glance': {'total': 0, 'passed': 0, 'failed': 0},
             'horizon': {'total': 0, 'passed': 0, 'failed': 0},
             'heat': {'total': 0, 'passed': 0, 'failed': 0},
-            'linux': {'total': 0, 'passed': 0, 'failed': 0}
+            'linux': {'total': 0, 'passed': 0, 'failed': 0},
+            'docker': {'total': 0, 'passed': 0, 'failed': 0}
         }
 
         # Severity counters
@@ -236,6 +224,8 @@ class ComplianceMetrics:
             return 'horizon'
         elif 'orchestration' in control_id_lower or control_id_lower.startswith('os-orchestration'):
             return 'heat'
+        elif control_id_lower.startswith('cis-docker'):
+            return 'docker'
         elif control_id_lower.startswith('cis-'):
             return 'linux'
         else:

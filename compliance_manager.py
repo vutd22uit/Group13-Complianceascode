@@ -68,6 +68,8 @@ def cmd_scan(args):
         target_path = "tests/inspec/openstack-cis"
     elif args.target == 'linux':
         target_path = "tests/inspec/linux-cis"
+    elif args.target == 'docker':
+        target_path = "tests/inspec/docker-cis"
     else:
         print(f"❌ Unknown target: {args.target}")
         return
@@ -156,7 +158,12 @@ def cmd_remediate(args):
         playbook = "remediation/ansible/cis-openstack-remediation.yml"
     elif args.target == 'linux':
         playbook = "remediation/ansible/cis-linux-remediation.yml"
-        
+    elif args.target == 'docker':
+        playbook = "remediation/ansible/cis-docker-remediation.yml"
+    else:
+        print(f"❌ Unknown remediation target: {args.target}")
+        return
+
     cmd = ["ansible-playbook", playbook]
     
     if args.inventory:
@@ -173,7 +180,7 @@ def main():
     
     # scan
     parser_scan = subparsers.add_parser("scan", help="Run compliance scan")
-    parser_scan.add_argument("--target", choices=['openstack', 'linux'], required=True)
+    parser_scan.add_argument("--target", choices=['openstack', 'linux', 'docker'], required=True)
     parser_scan.add_argument("--backend", choices=['local', 'ssh', 'docker'], default='local')
     parser_scan.add_argument("--host", help="Target host (for ssh)")
     parser_scan.add_argument("--user", default="root", help="SSH user")
@@ -190,7 +197,7 @@ def main():
     
     # remediate
     parser_rem = subparsers.add_parser("remediate", help="Apply fixes")
-    parser_rem.add_argument("--target", choices=['openstack', 'linux'], required=True)
+    parser_rem.add_argument("--target", choices=['openstack', 'linux', 'docker'], required=True)
     parser_rem.add_argument("--inventory", help="Ansible inventory file")
     parser_rem.add_argument("--dry-run", action="store_true", help="Don't make changes")
 

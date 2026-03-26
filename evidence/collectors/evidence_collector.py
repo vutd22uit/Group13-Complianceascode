@@ -61,6 +61,8 @@ class EvidenceCollector:
         
         if 'openstack' in profile_name.lower():
             standard = 'CIS OpenStack Foundations Benchmark'
+        elif 'docker' in profile_name.lower():
+            standard = 'CIS Docker Benchmark'
         elif 'linux' in profile_name.lower():
             standard = 'CIS Linux Benchmark'
         else:
